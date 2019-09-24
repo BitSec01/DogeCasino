@@ -13,6 +13,14 @@ module.exports.login = (req, res) => {
 module.exports.register = (req, res) => {
   res.render('register');
 }
+module.exports.logout = (req, res) => {
+  res.session.loggedin = false;
+  res.session.id = null;
+  req.session.username = null;
+  req.session.tokens = null;
+
+  res.render('index');
+}
 
 module.exports.dashboard = (req, res) => {
   api.get_user_by_id(1, (success, user) => {

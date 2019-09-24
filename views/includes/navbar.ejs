@@ -9,9 +9,15 @@
       <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
 
         <% if (typeof id !== 'undefined') { %>
+
+          <% if (typeof tokens !== 'undefined') { %>
+            <li class="nav-item">
+                <a class="nav-link" href="#" id="tokens">tokens: <%= tokens %></a>
+            </li>
+          <% } %>
+
           <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="dropdownId" data-toggle="dropdown" aria-haspopup="true"
-                aria-expanded="false"><%= username %></a>
+              <a class="nav-link dropdown-toggle" href="#" id="dropdownId" data-toggle="dropdown" aria-haspopup="true"aria-expanded="false"><%= username %></a>
               <div class="dropdown-menu" aria-labelledby="dropdownId">
                 <a class="dropdown-item" href="/deposit">Deposit</a>
                 <a class="dropdown-item" href="/withdraw">Withdraw</a>

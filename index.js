@@ -41,6 +41,7 @@ const posts = require(path.join(app_path + '/controller/posts'));
 app.get('/', pages.index);
 app.get('/register', pages.register);
 app.get('/login', pages.login);
+app.get('/logout', auth.isAuthenticated, pages.logout);
 
 app.get('/dashboard', auth.isAuthenticated, pages.dashboard);
 
