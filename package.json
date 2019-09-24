@@ -1,21 +1,21 @@
 {
-  "name": "dogecasino",
+  "name": "dogetest",
   "version": "1.0.0",
-  "description": "A provable fair casino that uses dogecoins as currency",
+  "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [
-    "dogecoin",
-    "crypto",
-    "casino"
-  ],
-  "author": "Ramon Robben",
+  "author": "",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.19.0",
+    "dogecoin": "0.0.0",
+    "ejs": "^2.7.1",
     "express": "^4.17.1",
-    "request": "^2.88.0",
-    "request-promise": "^4.2.4"
+    "express-session": "^1.16.2",
+    "mysql": "^2.17.1",
+    "node-dogecoin": "^0.3.9",
+    "session-memory-store": "^1.0.0"
   }
 }
