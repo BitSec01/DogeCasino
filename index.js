@@ -1,5 +1,3 @@
-const dogecoin = require('node-dogecoin')();
-const fs = require('fs');
 const express = require('express');
 const bodyParser = require('body-parser');
 const session = require('express-session');
@@ -8,59 +6,17 @@ const MemoryStore = require('session-memory-store')(session);
 const port = process.env.PORT || 80;
 const app = express();
 
-const session_config = require('./secrets/session.json');
-
-function check_configs(callback) {
-  var session_config = {
-    secret: 'dogecoind_secret'
-  }
-
-  var dogecoind_config = {
-    user: 'user',
-    pass: 'test',
-    port: '22555'
-  }
-
-  var mysql_config = {
-    host: 'localhost',
-    user: 'user',
-    password: '',
-    database: 'database'
-  }
-
-  if (!fs.existsSync('./secrets')) {
-    fs.mkdirSync('./secrets');
-    console.log('secrets folder has been made');
-  }
-
-  if (!fs.existsSync('./secrets/session.json')) {
-    fs.writeFile("./secrets/session.json", JSON.stringify(session_config), function (err) {
-      if (err) return callback(err);
-      console.log('session.json has been created');
-    });
-  }
-
-  if (!fs.existsSync('./secrets/dogecoind.json')) {
-    fs.writeFile("./secrets/dogecoind.json", JSON.stringify(dogecoind_config), function (err) {
-      if (err) return callback(err);
-      console.log('dogecoind.json has been created');
-    });
-  }
-
-  if (!fs.existsSync('./secrets/mysql.json')) {
-    fs.writeFile("./secrets/mysql.json", JSON.stringify(mysql_config), function (err) {
-      if (err) return callback(err);
-      console.log('mysql.json has been created');
-    });
-  }
-}
-
-// check if all configs are available because we cannot start without them
-check_configs((err) => {
+const path = require('path');
+const app_path = path.dirname(require.main.filename);
+const configs = require(path.join(app_path + '/controller/configs.js'));
+configs.initialize((err) => {
   console.log(err);
-  console.warn('error has occured we will close node now');
   process.exit()
 });
+
+
+const session_config = require(path.join(app_path + '/secrets/session.json'));
+
 
 app.use(bodyParser.urlencoded({extended: false})); // parse application/x-www-form-urlencoded
 app.use(bodyParser.json()); // parse application/json
@@ -78,14 +34,18 @@ app.use(session({
   })
 }));
 
-const pages = require('./controller/pages');
-const posts = require('./controller/posts')
+const auth = require(path.join(app_path + '/controller/auth'));
+const pages = require(path.join(app_path + '/controller/pages'));
+const posts = require(path.join(app_path + '/controller/posts'));
 
 app.get('/', pages.index);
 app.get('/register', pages.register);
 app.get('/login', pages.login);
 
+app.get('/dashboard', auth.isAuthenticated, pages.dashboard);
+
 app.post('/register', posts.register);
+app.post('/login', posts.login);
 
 app.listen(port, () => {
   console.log('Listening on port ' + port);

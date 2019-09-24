@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+<%- include('includes/header') -%>
+<body>
+
+  <%- include('includes/navbar') -%>
+
+  <div class="jumbotron jumbotron-fluid">
+    <div class="container">
+      <h4 class="display-4">Welcome back <%= username %></h4>
+      <p>You have a balance of <%= tokens %> tokens</p>
+    </div>
+  </div>
+
+  <%- include('includes/scripts') -%>
+</body>
+</html>
