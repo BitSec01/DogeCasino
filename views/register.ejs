@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<%- include('includes/header') -%>
+<body>
+
+  <%- include('includes/navbar') -%>
+
+  <div class="jumbotron jumbotron-fluid">
+    <div class="container">
+      <h1 class="display-3">Register</h1>
+
+      <form action="/register" method="post" class="ajax">
+
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" class="form-control" name="email" id="email" aria-describedby="emailHelp" placeholder="example@hotmail.com">
+        </div>
+
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" class="form-control" name="username" id="username" aria-describedby="usernameHelp" placeholder="username">
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" class="form-control" name="password" id="password" aria-describedby="passwordHelp" placeholder="password">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+
+      </form>
+
+    </div>
+  </div>
+
+  <%- include('includes/scripts') -%>
+  <script>
+    $("form.ajax").on("submit", function(){
+    var that = $(this);
+    var url = that.attr("action");
+    var type = that.attr("method");
+    var data = {};
+
+    // loop thru inputs
+    that.find("[name]").each(function(index, value){
+      var that = $(this);
+      var name = that.attr("name");
+      var value = that.val();
+      data[name] = value;
+    });
+
+    // send request
+    $.ajax({
+      type: type,
+      url: url,
+      data: data,
+      success: function (response) {
+        console.log(response);
+      }
+    });
+    
+    return false;
+  });
+  </script>
+</body>
+</html>

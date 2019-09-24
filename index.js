@@ -4,13 +4,11 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const MemoryStore = require('session-memory-store')(session);
-const mysql = require('mysql');
 
 const port = process.env.PORT || 80;
 const app = express();
 
-const configs = [];
-
+const session_config = require('./secrets/session.json');
 
 function check_configs(callback) {
   var session_config = {
@@ -35,30 +33,21 @@ function check_configs(callback) {
     console.log('secrets folder has been made');
   }
 
-  if (fs.existsSync('./secrets/session.json')) {
-    console.log('session.json loading');
-    configs['session'] = require('./secrets/session.json');
-  }else{
+  if (!fs.existsSync('./secrets/session.json')) {
     fs.writeFile("./secrets/session.json", JSON.stringify(session_config), function (err) {
       if (err) return callback(err);
       console.log('session.json has been created');
     });
   }
 
-  if (fs.existsSync('./secrets/dogecoind.json')) {
-    console.log('dogecoind.json loading');
-    configs['dogecoind'] = require('./secrets/dogecoind.json');
-  }else{
+  if (!fs.existsSync('./secrets/dogecoind.json')) {
     fs.writeFile("./secrets/dogecoind.json", JSON.stringify(dogecoind_config), function (err) {
       if (err) return callback(err);
       console.log('dogecoind.json has been created');
     });
   }
 
-  if (fs.existsSync('./secrets/mysql.json')) {
-    console.log('mysql.json loading');
-    configs['mysql'] = require('./secrets/mysql.json');
-  }else{
+  if (!fs.existsSync('./secrets/mysql.json')) {
     fs.writeFile("./secrets/mysql.json", JSON.stringify(mysql_config), function (err) {
       if (err) return callback(err);
       console.log('mysql.json has been created');
@@ -73,14 +62,6 @@ check_configs((err) => {
   process.exit()
 });
 
-const connection = mysql.createConnection(configs['mysql']);
-
-connection.query('SELECT 1', function (error, results, fields) {
-  if (!error) return console.log('Connected to database!');
-  console.log('Could NOT connect to database! \n' + error);
-  process.exit();
-});
-
 app.use(bodyParser.urlencoded({extended: false})); // parse application/x-www-form-urlencoded
 app.use(bodyParser.json()); // parse application/json
 app.use(express.static(__dirname + '/public'));
@@ -88,7 +69,7 @@ app.set('view engine', 'ejs');
 
 app.use(session({
   name: 'session',
-  secret: configs['session'].secret,
+  secret: session_config.secret,
   resave: true,
   saveUninitialized: false,
   maxAge: 2 * 60 * 60 * 1000, // Maximum age of 2 hours
@@ -97,13 +78,14 @@ app.use(session({
   })
 }));
 
-dogecoin.set('user', configs['dogecoind'].user);
-dogecoin.set('pass', configs['dogecoind'].pass);
-dogecoin.set('port', configs['dogecoind'].port);
+const pages = require('./controller/pages');
+const posts = require('./controller/posts')
 
-app.get('/', (req, res) => {
-  res.render('index');
-});
+app.get('/', pages.index);
+app.get('/register', pages.register);
+app.get('/login', pages.login);
+
+app.post('/register', posts.register);
 
 app.listen(port, () => {
   console.log('Listening on port ' + port);
