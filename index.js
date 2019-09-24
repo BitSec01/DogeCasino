@@ -1,15 +1,16 @@
 const dogecoin = require('node-dogecoin')();
 const fs = require('fs');
-
 const express = require('express');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const MemoryStore = require('session-memory-store')(session);
+const mysql = require('mysql');
 
 const port = process.env.PORT || 80;
 const app = express();
 
 const configs = [];
+
 
 function check_configs(callback) {
   var session_config = {
@@ -18,7 +19,8 @@ function check_configs(callback) {
 
   var dogecoind_config = {
     user: 'user',
-    pass: 'test'
+    pass: 'test',
+    port: '22555'
   }
 
   var mysql_config = {
@@ -71,6 +73,14 @@ check_configs((err) => {
   process.exit()
 });
 
+const connection = mysql.createConnection(configs['mysql']);
+
+connection.query('SELECT 1', function (error, results, fields) {
+  if (!error) return console.log('Connected to database!');
+  console.log('Could NOT connect to database! \n' + error);
+  process.exit();
+});
+
 app.use(bodyParser.urlencoded({extended: false})); // parse application/x-www-form-urlencoded
 app.use(bodyParser.json()); // parse application/json
 app.use(express.static(__dirname + '/public'));
@@ -87,9 +97,9 @@ app.use(session({
   })
 }));
 
-dogecoin.set('user', 'user');
-dogecoin.set('pass', 'test');
-dogecoin.set('port', 44555);
+dogecoin.set('user', configs['dogecoind'].user);
+dogecoin.set('pass', configs['dogecoind'].pass);
+dogecoin.set('port', configs['dogecoind'].port);
 
 app.get('/', (req, res) => {
   res.render('index');
