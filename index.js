@@ -41,12 +41,16 @@ const posts = require(path.join(app_path + '/controller/posts'));
 app.get('/', pages.index);
 app.get('/register', pages.register);
 app.get('/login', pages.login);
-app.get('/logout', auth.isAuthenticated, pages.logout);
 
+app.get('/logout', auth.isAuthenticated, pages.logout);
 app.get('/dashboard', auth.isAuthenticated, pages.dashboard);
+app.get('/deposit', auth.isAuthenticated, pages.deposit);
+
+app.get('/address/balance', auth.isAuthenticated, pages.check_address_balance);
 
 app.post('/register', posts.register);
 app.post('/login', posts.login);
+app.post('/deposit', auth.isAuthenticated, posts.deposit);
 
 app.listen(port, () => {
   console.log('Listening on port ' + port);

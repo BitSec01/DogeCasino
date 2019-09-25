@@ -1,23 +1,31 @@
 <!doctype html>
 <html lang="en">
 <%- include('includes/header') -%>
+
 <body>
 
   <%- include('includes/navbar') -%>
 
   <div class="jumbotron jumbotron-fluid">
     <div class="container">
+
+      <div class="alert alert-danger" id="alert-error" role="alert" style="display:none;">
+        This is a danger alert—check it out!
+      </div>
+
       <h1 class="display-3">Login</h1>
 
       <form action="/login" method="post" class="ajax">
         <div class="form-group">
           <label for="email">Email</label>
-          <input type="email" class="form-control" name="email" id="email" aria-describedby="emailHelp" placeholder="example@hotmail.com">
+          <input type="email" class="form-control" name="email" id="email" aria-describedby="emailHelp"
+            placeholder="example@hotmail.com">
         </div>
 
         <div class="form-group">
           <label for="password">Password</label>
-          <input type="password" class="form-control" name="password" id="password" aria-describedby="passwordHelp" placeholder="password">
+          <input type="password" class="form-control" name="password" id="password" aria-describedby="passwordHelp"
+            placeholder="password">
         </div>
 
         <button type="submit" class="btn btn-primary">Submit</button>
@@ -29,7 +37,7 @@
 
   <%- include('includes/scripts') -%>
   <script>
-    $("form.ajax").on("submit", function() {
+    $("form.ajax").on("submit", function () {
       event.preventDefault();
       var that = $(this);
       var url = that.attr("action");
@@ -37,7 +45,7 @@
       var data = {};
 
       // loop thru inputs
-      that.find("[name]").each(function(index, value){
+      that.find("[name]").each(function (index, value) {
         var that = $(this);
         var name = that.attr("name");
         var value = that.val();
@@ -54,7 +62,7 @@
           if (!response.success) {
             $('#alert-error').text(response.message);
             $('#alert-error').show();
-          }else{
+          } else {
             $('#alert-error').removeClass('alert-danger');
             $('#alert-error').addClass('alert-success');
             $('#alert-error').text(response.message);
@@ -65,9 +73,10 @@
           }
         }
       });
-      
+
       return false;
     });
   </script>
 </body>
+
 </html>

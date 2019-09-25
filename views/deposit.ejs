@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<%- include('includes/header') -%>
+
+<body>
+
+  <%- include('includes/navbar') -%>
+
+  <div class="jumbotron jumbotron-fluid">
+    <div class="container">
+      <h1 class="display-3">Deposit</h1>
+
+      <div class="alert alert-danger" id="alert-error" role="alert" style="display:none;">
+        This is a danger alert—check it out!
+      </div>
+
+      <p class="lead">Send dogecoin to the following address. Once you've sent it click on next.</br>
+        You will be charged a 5 tokens deposit fee</p>
+
+      <form action="/deposit" method="post">
+        <div class="form-group">
+          <label for=""></label>
+          <% if (typeof address !== 'undefined') { %>
+          <input type="text" class="form-control" name="address" id="address" value="<%= address %>">
+          <% }else{ %>
+          <input type="text" class="form-control" name="address" id="address"
+            placeholder="no address could be loaded. please refresh the page and try again">
+          <% } %>
+        </div>
+        </br>
+        <button type="submit" class="btn btn-primary" onclick="check_balance()">Next</button>
+      </form>
+
+
+    </div>
+  </div>
+
+  <%- include('includes/scripts') -%>
+  <script>
+
+    function check_balance() {
+      event.preventDefault();
+
+      $.ajax({
+        type: "GET",
+        url: "/address/balance",
+        data: { address: $('#address').val() },
+        success: function (response) {
+
+          if (response && !response.error) {
+            if (response.message > 5) {
+              add_coins();
+            }else{
+              $('#alert-error').text('Balance on the address needs to be greater than 5');
+              $('#alert-error').show();
+            }
+          }else{
+            $('#alert-error').text(response.message);
+            $('#alert-error').show();
+          }
+
+        }
+      });
+
+    }
+
+    //server does extra checks on validity
+    function add_coins() {
+      $.ajax({
+        type: "POST",
+        url: "/deposit",
+        data: { address: $('#address').val() },
+        dataType: "json",
+        success: function (response) {
+          if (response.success) {
+            $('#alert-error').removeClass('alert-danger');
+            $('#alert-error').addClass('alert-success');
+            $('#alert-error').text('There has been a deposit! coins have been added have fun!');
+            $('#alert-error').show();
+            console.log(response);
+          }else{
+            $('#alert-error').text(response.message);
+            $('#alert-error').show();
+          }
+        }
+      });
+    }
+
+  </script>
+</body>
+
+</html>
